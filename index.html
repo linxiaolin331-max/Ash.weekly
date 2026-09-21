@@ -590,7 +590,7 @@ entries = snap.docs.map(d => d.data());
        const snap = await getDoc(
   doc(firestore, "reports", start)
 );
-        if (snap.exists) { fillForm(snap.data()); note('已载入该周记录'); }
+        if (snap.exists()) { fillForm(snap.data()); note('已载入该周记录'); }
       } else {
         const saved = localStorage.getItem(STORE_PREFIX + start);
         if (saved) { fillForm(JSON.parse(saved)); note('已载入该周记录'); }
@@ -605,7 +605,7 @@ entries = snap.docs.map(d => d.data());
     try {
       if (reportsCol) {
         const snap = await getDoc(   doc(firestore, "reports", start) );
-        if (snap.exists) fillForm(snap.data());
+        if (snap.exists()) fillForm(snap.data());
       } else {
         const saved = localStorage.getItem(STORE_PREFIX + start);
         if (saved) fillForm(JSON.parse(saved));
