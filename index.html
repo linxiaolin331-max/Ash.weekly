@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>个人经营周报</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    --paper: #FBF8F1;
+    --paper-line: #DAD3BE;
+    --ink: #262117;
+    --ink-soft: #5B5445;
+    --stamp: #A63A2E;
+    --stamp-soft: #A63A2E1a;
+    --gold: #8C7A3F;
+    --card-bg: #ffffff;
+    --card-border: #E4DDC8;
+    --danger: #A63A2E;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --paper: #1E1B15;
+      --paper-line: #3A3527;
+      --ink: #EDE8DA;
+      --ink-soft: #B7AF98;
+      --stamp: #D9695A;
+      --stamp-soft: #D9695A22;
+      --gold: #C9B564;
+      --card-bg: #262217;
+      --card-border: #3A3527;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1E1B15;
+    --paper-line: #3A3527;
+    --ink: #EDE8DA;
+    --ink-soft: #B7AF98;
+    --stamp: #D9695A;
+    --stamp-soft: #D9695A22;
+    --gold: #C9B564;
+    --card-bg: #262217;
+    --card-border: #3A3527;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Sans SC", -apple-system, sans-serif;
+    line-height: 1.6;
+    background-image:
+      repeating-linear-gradient(var(--paper-line) 0 1px, transparent 1px 100%);
+    background-size: 100% 2.4em;
+    background-attachment: local;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.2rem 1.4rem 4rem;
+  }
+  header.doc {
+    position: relative;
+    padding-bottom: 1.4rem;
+    margin-bottom: 1.6rem;
+    border-bottom: 2.5px solid var(--ink);
+  }
+  .doc-eyebrow {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    margin: 0 0 0.35rem;
+  }
+  h1 {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 700;
+    font-size: clamp(1.7rem, 6vw, 2.3rem);
+    margin: 0 0 0.5rem;
+    letter-spacing: 0.01em;
+  }
+  .week-row {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .week-row input[type="date"] {
+    font-family: inherit;
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--paper-line);
+    padding: 0.15rem 0.1rem;
+  }
+  .stamp {
+    position: absolute;
+    top: -0.3rem;
+    right: 0;
+    width: 84px;
+    height: 84px;
+    transform: rotate(-11deg);
+    opacity: 0.9;
+  }
+  .summary-field {
+    margin-top: 1.1rem;
+  }
+  .summary-field textarea {
+    width: 100%;
+    font-family: "Noto Serif SC", serif;
+    font-size: 1.02rem;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px dashed var(--paper-line);
+    resize: none;
+    padding: 0.3rem 0 0.5rem;
+  }
+  .summary-field textarea::placeholder { color: var(--ink-soft); opacity: 0.7; }
+
+  section.block { margin-bottom: 2rem; }
+  .block-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+  }
+  .block-title .cn {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 700;
+    font-size: 1.12rem;
+  }
+  .block-title .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--paper-line);
+  }
+
+  .dept-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+  .dept-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 3px;
+    padding: 0.95rem 1.05rem 1.05rem;
+    position: relative;
+  }
+  .dept-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.55rem;
+  }
+  .dept-name {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .dept-tag {
+    font-size: 0.72rem;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 2px;
+    padding: 0.05rem 0.4rem;
+  }
+  .dept-fields { display: grid; gap: 0.55rem; }
+  .field-label {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.2rem;
+    display: block;
+  }
+  .dept-card textarea, .dept-card input[type="text"] {
+    width: 100%;
+    font-family: "Noto Sans SC", sans-serif;
+    font-size: 0.94rem;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--paper-line);
+    resize: none;
+    padding: 0.2rem 0.1rem 0.35rem;
+  }
+  .dept-card textarea:focus, .dept-card input:focus,
+  .summary-field textarea:focus {
+    outline: none;
+    border-bottom-color: var(--stamp);
+  }
+  .dept-card textarea::placeholder, .dept-card input::placeholder { color: var(--ink-soft); opacity: 0.6; }
+
+  .plain-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 3px;
+    padding: 0.95rem 1.05rem 1.05rem;
+  }
+  .plain-card textarea {
+    width: 100%;
+    min-height: 4.6rem;
+    font-family: "Noto Sans SC", sans-serif;
+    font-size: 0.94rem;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    resize: vertical;
+    padding: 0;
+  }
+  .plain-card textarea:focus { outline: none; }
+
+  .actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin: 1.6rem 0 0.6rem;
+  }
+  button {
+    font-family: "Noto Sans SC", sans-serif;
+    font-size: 0.88rem;
+    padding: 0.55rem 1.05rem;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1.4px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  button.primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  button.primary:hover { opacity: 0.85; }
+  button:not(.primary):hover { background: var(--stamp-soft); border-color: var(--stamp); color: var(--stamp); }
+  button.danger { border-color: var(--danger); color: var(--danger); }
+  button.danger:hover { background: var(--stamp-soft); }
+
+  .archive {
+    margin-top: 2.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--paper-line);
+  }
+  .archive-title {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin-bottom: 0.6rem;
+  }
+  .archive-list { display: flex; flex-direction: column; gap: 0.4rem; }
+  .archive-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--card-border);
+    border-radius: 2px;
+    background: var(--card-bg);
+  }
+  .archive-item button {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.78rem;
+  }
+  .archive-empty { font-size: 0.86rem; color: var(--ink-soft); font-style: italic; }
+  .status-note {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    min-height: 1.1rem;
+    margin-top: 0.5rem;
+  }
+  @media (max-width: 480px) {
+    .stamp { width: 62px; height: 62px; top: -0.1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="doc">
+    <svg class="stamp" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="44" fill="none" stroke="var(--stamp)" stroke-width="3.5"/>
+      <circle cx="50" cy="50" r="34" fill="none" stroke="var(--stamp)" stroke-width="1.4"/>
+      <text x="50" y="42" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="13" fill="var(--stamp)" font-weight="700">自营</text>
+      <text x="50" y="60" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="13" fill="var(--stamp)" font-weight="700">有限</text>
+      <text x="50" y="78" text-anchor="middle" font-family="Noto Serif SC, serif" font-size="13" fill="var(--stamp)" font-weight="700">公司</text>
+    </svg>
+    <p class="doc-eyebrow">CEO 周度经营报告</p>
+    <h1>本周经营总结</h1>
+    <div class="week-row">
+      <span>本周区间</span>
+      <input type="date" id="weekStart">
+      <span>至</span>
+      <input type="date" id="weekEnd">
+    </div>
+    <div class="summary-field">
+      <textarea id="overview" rows="2" placeholder="一句话总结本周整体经营情况……"></textarea>
+    </div>
+  </header>
+
+  <section class="block">
+    <div class="block-title"><span class="cn">各部门业绩</span><span class="rule"></span></div>
+    <div class="dept-grid" id="deptGrid"></div>
+  </section>
+
+  <section class="block">
+    <div class="block-title"><span class="cn">风险与问题</span><span class="rule"></span></div>
+    <div class="plain-card">
+      <textarea id="risks" placeholder="哪个部门资源（时间）不够？是否有产出低于预期？原因是什么？"></textarea>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block-title"><span class="cn">下周经营计划</span><span class="rule"></span></div>
+    <div class="plain-card">
+      <textarea id="okr" placeholder="O（本周目标）：……&#10;KR1：……&#10;KR2：……"></textarea>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block-title"><span class="cn">资源调配建议</span><span class="rule"></span></div>
+    <div class="plain-card">
+      <textarea id="resources" placeholder="是否需要从某部门抽时间补给另一部门？有没有部门可以降本增效？"></textarea>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="primary" id="saveBtn">保存本周报告</button>
+    <button id="newBtn">新建一周</button>
+    <button class="danger" id="deleteBtn">删除本周</button>
+  </div>
+  <div class="status-note" id="statusNote"></div>
+
+  <div class="archive">
+    <div class="archive-title">历史周报存档</div>
+    <div class="archive-list" id="archiveList"></div>
+  </div>
+
+</div>
+
+<script>
+(async function() {
+  const DEPTS = [
+    { key: 'japanese', name: '日语部', tag: '语言' },
+    { key: 'cet6', name: '六级词汇部', tag: '语言' },
+    { key: 'drawing', name: '绘画部', tag: '创作' },
+    { key: 'reading', name: '阅读部', tag: '输入' },
+    { key: 'chess', name: '象棋部', tag: '轻资产' }
+  ];
+  const STORE_PREFIX = 'weeklyreport:';
+  const grid = document.getElementById('deptGrid');
+  const statusNote = document.getElementById('statusNote');
+
+  // Try the cross-device store; fall back to this-device-only storage.
+  let db = null;
+  let reportsCol = null;
+  try {
+    if (window.claude && typeof window.claude.use === 'function') {
+      db = await window.claude.use('db');
+      if (db) reportsCol = db.collection('reports');
+    }
+  } catch (e) { console.error('db unavailable', e); }
+  const syncBadge = document.createElement('div');
+  syncBadge.className = 'status-note';
+  syncBadge.style.marginTop = '0';
+  syncBadge.textContent = reportsCol
+    ? '已连接跨设备同步 — 登录同一账号在其他设备打开此页即可看到相同记录'
+    : '当前仅保存在本设备浏览器中，换设备打开不会同步';
+  document.querySelector('.wrap').insertBefore(syncBadge, document.querySelector('.archive'));
+
+  DEPTS.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'dept-card';
+    card.innerHTML = `
+      <div class="dept-head">
+        <span class="dept-name">${d.name}</span>
+        <span class="dept-tag">${d.tag}</span>
+      </div>
+      <div class="dept-fields">
+        <div>
+          <label class="field-label">本周产出</label>
+          <textarea rows="2" data-dept="${d.key}" data-field="output" placeholder="完成了什么，数据/进度如何"></textarea>
+        </div>
+        <div>
+          <label class="field-label">亮点 / 问题</label>
+          <textarea rows="2" data-dept="${d.key}" data-field="notes" placeholder="值得记录的亮点，或遇到的困难"></textarea>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  function isoDate(d) { return d.toISOString().slice(0, 10); }
+  function mondayOf(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    d.setDate(d.getDate() + diff);
+    return d;
+  }
+
+  function currentKey() {
+    const start = document.getElementById('weekStart').value;
+    return start ? STORE_PREFIX + start : null;
+  }
+
+  function collectForm() {
+    const data = {
+      weekStart: document.getElementById('weekStart').value,
+      weekEnd: document.getElementById('weekEnd').value,
+      overview: document.getElementById('overview').value,
+      risks: document.getElementById('risks').value,
+      okr: document.getElementById('okr').value,
+      resources: document.getElementById('resources').value,
+      depts: {}
+    };
+    document.querySelectorAll('[data-dept]').forEach(el => {
+      const dept = el.dataset.dept, field = el.dataset.field;
+      if (!data.depts[dept]) data.depts[dept] = {};
+      data.depts[dept][field] = el.value;
+    });
+    return data;
+  }
+
+  function fillForm(data) {
+    document.getElementById('weekStart').value = data.weekStart || '';
+    document.getElementById('weekEnd').value = data.weekEnd || '';
+    document.getElementById('overview').value = data.overview || '';
+    document.getElementById('risks').value = data.risks || '';
+    document.getElementById('okr').value = data.okr || '';
+    document.getElementById('resources').value = data.resources || '';
+    document.querySelectorAll('[data-dept]').forEach(el => {
+      const dept = el.dataset.dept, field = el.dataset.field;
+      el.value = (data.depts && data.depts[dept] && data.depts[dept][field]) || '';
+    });
+  }
+
+  function clearForm(weekStart, weekEnd) {
+    fillForm({ weekStart, weekEnd, overview: '', risks: '', okr: '', resources: '', depts: {} });
+  }
+
+  function setDefaultWeek() {
+    const today = new Date();
+    const mon = mondayOf(today);
+    const sun = new Date(mon); sun.setDate(mon.getDate() + 5);
+    document.getElementById('weekStart').value = isoDate(mon);
+    document.getElementById('weekEnd').value = isoDate(sun);
+  }
+
+  async function loadArchive() {
+    const list = document.getElementById('archiveList');
+    list.innerHTML = '';
+    let entries = [];
+    if (reportsCol) {
+      try {
+        const snap = await reportsCol.orderBy('weekStart', 'desc').limit(100).get();
+        entries = snap.docs.map(d => d.data());
+      } catch (e) { console.error('读取存档失败', e); }
+    } else {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(STORE_PREFIX)) {
+            try { entries.push(JSON.parse(localStorage.getItem(k))); } catch (e) {}
+          }
+        }
+        entries.sort((a, b) => (b.weekStart || '').localeCompare(a.weekStart || ''));
+      } catch (e) { console.error('读取存档失败', e); }
+    }
+    if (entries.length === 0) {
+      list.innerHTML = '<div class="archive-empty">还没有保存过周报</div>';
+      return;
+    }
+    entries.forEach(entry => {
+      const item = document.createElement('div');
+      item.className = 'archive-item';
+      const label = (entry.weekStart || '') + (entry.weekEnd ? ' ~ ' + entry.weekEnd : '');
+      item.innerHTML = `<span>${label}</span>`;
+      const openBtn = document.createElement('button');
+      openBtn.textContent = '打开';
+      openBtn.onclick = () => { fillForm(entry); note('已载入 ' + label); };
+      item.appendChild(openBtn);
+      list.appendChild(item);
+    });
+  }
+
+  function note(msg) {
+    statusNote.textContent = msg;
+    setTimeout(() => { if (statusNote.textContent === msg) statusNote.textContent = ''; }, 2400);
+  }
+
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    const key = currentKey();
+    const start = document.getElementById('weekStart').value;
+    if (!key || !start) { note('请先选择本周开始日期'); return; }
+    const data = collectForm();
+    try {
+      if (reportsCol) {
+        await reportsCol.doc(start).set(data);
+      } else {
+        localStorage.setItem(key, JSON.stringify(data));
+      }
+      note('已保存');
+      loadArchive();
+    } catch (e) {
+      console.error(e);
+      note('保存失败，请稍后重试');
+    }
+  });
+
+  document.getElementById('newBtn').addEventListener('click', () => {
+    const today = new Date();
+    const mon = mondayOf(today);
+    const sun = new Date(mon); sun.setDate(mon.getDate() + 5);
+    clearForm(isoDate(mon), isoDate(sun));
+    note('已开启新的一周');
+  });
+
+  document.getElementById('deleteBtn').addEventListener('click', async () => {
+    const key = currentKey();
+    const start = document.getElementById('weekStart').value;
+    if (!key || !start) return;
+    try {
+      if (reportsCol) {
+        await reportsCol.doc(start).delete();
+      } else {
+        localStorage.removeItem(key);
+      }
+      note('已删除本周记录');
+      loadArchive();
+    } catch (e) { console.error(e); }
+  });
+
+  document.getElementById('weekStart').addEventListener('change', async () => {
+    const start = document.getElementById('weekStart').value;
+    if (!start) return;
+    try {
+      if (reportsCol) {
+        const snap = await reportsCol.doc(start).get();
+        if (snap.exists) { fillForm(snap.data()); note('已载入该周记录'); }
+      } else {
+        const saved = localStorage.getItem(STORE_PREFIX + start);
+        if (saved) { fillForm(JSON.parse(saved)); note('已载入该周记录'); }
+      }
+    } catch (e) { console.error(e); }
+  });
+
+  setDefaultWeek();
+  (async function tryLoadCurrent() {
+    const start = document.getElementById('weekStart').value;
+    if (!start) return;
+    try {
+      if (reportsCol) {
+        const snap = await reportsCol.doc(start).get();
+        if (snap.exists) fillForm(snap.data());
+      } else {
+        const saved = localStorage.getItem(STORE_PREFIX + start);
+        if (saved) fillForm(JSON.parse(saved));
+      }
+    } catch (e) { console.error(e); }
+  })();
+  loadArchive();
+})();
+</script>
+</body>
+</html>
