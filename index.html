@@ -347,8 +347,47 @@
 
 </div>
 
-<script>
+<script type="module">
+
+import { initializeApp } from 
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  deleteDoc,
+  query,
+  orderBy,
+  limit
+} from 
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC5Vgta-zdFF_CM_ulpzj_I9yoMEHNRUCY",
+  authDomain: "ash-weekly-3618a.firebaseapp.com",
+  projectId: "ash-weekly-3618a",
+  storageBucket: "ash-weekly-3618a.firebasestorage.app",
+  messagingSenderId: "1089191626475",
+  appId: "1:1089191626475:web:268e45a1c25683069d20ae",
+  measurementId: "G-MV7L5W91ZV"
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const firestore = getFirestore(app);
+
+const reportsCol = collection(firestore, "reports");
+
+
+
 (async function() {
+  
   const DEPTS = [
     { key: 'japanese', name: '日语部', tag: '语言' },
     { key: 'cet6', name: '六级词汇部', tag: '语言' },
@@ -361,14 +400,7 @@
   const statusNote = document.getElementById('statusNote');
 
   // Try the cross-device store; fall back to this-device-only storage.
-  let db = null;
-  let reportsCol = null;
-  try {
-    if (window.claude && typeof window.claude.use === 'function') {
-      db = await window.claude.use('db');
-      if (db) reportsCol = db.collection('reports');
-    }
-  } catch (e) { console.error('db unavailable', e); }
+ 
   const syncBadge = document.createElement('div');
   syncBadge.className = 'status-note';
   syncBadge.style.marginTop = '0';
@@ -505,7 +537,10 @@
     const data = collectForm();
     try {
       if (reportsCol) {
-        await reportsCol.doc(start).set(data);
+       await setDoc(
+  doc(firestore, "reports", start),
+  data
+);
       } else {
         localStorage.setItem(key, JSON.stringify(data));
       }
@@ -531,7 +566,7 @@
     if (!key || !start) return;
     try {
       if (reportsCol) {
-        await reportsCol.doc(start).delete();
+        await deleteDoc(   doc(firestore, "reports", start) );
       } else {
         localStorage.removeItem(key);
       }
@@ -545,7 +580,9 @@
     if (!start) return;
     try {
       if (reportsCol) {
-        const snap = await reportsCol.doc(start).get();
+       const snap = await getDoc(
+  doc(firestore, "reports", start)
+);
         if (snap.exists) { fillForm(snap.data()); note('已载入该周记录'); }
       } else {
         const saved = localStorage.getItem(STORE_PREFIX + start);
