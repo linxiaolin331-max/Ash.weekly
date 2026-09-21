@@ -494,8 +494,15 @@ const reportsCol = collection(firestore, "reports");
     let entries = [];
     if (reportsCol) {
       try {
-        const snap = await reportsCol.orderBy('weekStart', 'desc').limit(100).get();
-        entries = snap.docs.map(d => d.data());
+        const q = query(
+  reportsCol,
+  orderBy("weekStart", "desc"),
+  limit(100)
+);
+
+const snap = await getDocs(q);
+
+entries = snap.docs.map(d => d.data());
       } catch (e) { console.error('读取存档失败', e); }
     } else {
       try {
@@ -597,7 +604,7 @@ const reportsCol = collection(firestore, "reports");
     if (!start) return;
     try {
       if (reportsCol) {
-        const snap = await reportsCol.doc(start).get();
+        const snap = await getDoc(   doc(firestore, "reports", start) );
         if (snap.exists) fillForm(snap.data());
       } else {
         const saved = localStorage.getItem(STORE_PREFIX + start);
