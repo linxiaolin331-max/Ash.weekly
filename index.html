@@ -619,6 +619,7 @@ entries = snap.docs.map(d => d.data());
     const start = document.getElementById('weekStart').value;
     if (!key || !start) { note('请先选择本周开始日期'); return; }
     const data = collectForm();
+   try { 
 const user = auth.currentUser;
 
 if (!user) {
