@@ -285,7 +285,51 @@
 </head>
 <body>
 <div class="wrap">
+<div id="loginBox" style="
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  border-radius: 3px;
+">
+  <div style="font-family:'Noto Serif SC',serif;font-weight:700;margin-bottom:0.8rem;">
+    登录个人经营系统
+  </div>
 
+  <input
+    id="loginEmail"
+    type="email"
+    placeholder="邮箱"
+    style="
+      width:100%;
+      padding:0.6rem;
+      margin-bottom:0.6rem;
+      background:transparent;
+      color:var(--ink);
+      border:1px solid var(--card-border);
+    "
+  >
+
+  <input
+    id="loginPassword"
+    type="password"
+    placeholder="密码"
+    style="
+      width:100%;
+      padding:0.6rem;
+      margin-bottom:0.6rem;
+      background:transparent;
+      color:var(--ink);
+      border:1px solid var(--card-border);
+    "
+  >
+
+  <button class="primary" id="loginBtn">登录</button>
+
+  <div id="loginStatus" class="status-note"></div>
+</div>
+
+<div id="appContent">
   <header class="doc">
     <svg class="stamp" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
       <circle cx="50" cy="50" r="44" fill="none" stroke="var(--stamp)" stroke-width="3.5"/>
@@ -344,7 +388,7 @@
     <div class="archive-title">历史周报存档</div>
     <div class="archive-list" id="archiveList"></div>
   </div>
-
+</div>
 </div>
 
 <script type="module">
@@ -365,7 +409,13 @@ import {
   limit
 } from 
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC5Vgta-zdFF_CM_ulpzj_I9yoMEHNRUCY",
@@ -381,11 +431,38 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const firestore = getFirestore(app);
+const auth = getAuth(app);
 
 const reportsCol = collection(firestore, "reports");
 
+const loginBtn = document.getElementById('loginBtn');
 
+loginBtn.addEventListener('click', async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const loginStatus = document.getElementById('loginStatus');
 
+  if (!email || !password) {
+    loginStatus.textContent = '请输入邮箱和密码';
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    loginStatus.textContent = '登录成功';
+  } catch (e) {
+    console.error(e);
+    loginStatus.textContent = '登录失败：' + e.message;
+  }
+});
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log('当前登录用户：', user.email);
+    console.log('当前 UID：', user.uid);
+  } else {
+    console.log('当前没有登录用户');
+  }
+});
 (async function() {
   
   const DEPTS = [
@@ -542,7 +619,16 @@ entries = snap.docs.map(d => d.data());
     const start = document.getElementById('weekStart').value;
     if (!key || !start) { note('请先选择本周开始日期'); return; }
     const data = collectForm();
-    try {
+const user = auth.currentUser;
+
+if (!user) {
+  note('请先登录');
+  return;
+}
+
+const data = collectForm();
+
+data.ownerUid = user.uid;
       if (reportsCol) {
        await setDoc(
   doc(firestore, "reports", start),
