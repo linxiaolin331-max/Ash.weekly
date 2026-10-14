@@ -166,7 +166,7 @@
     margin-bottom: 0.2rem;
     display: block;
   }
-  .dept-card textarea, .dept-card input[type="text"] {
+  .dept-card textarea, .dept-card input[type="text"], .dept-card select {
     width: 100%;
     font-family: "Noto Sans SC", sans-serif;
     font-size: 0.94rem;
@@ -177,9 +177,12 @@
     resize: none;
     padding: 0.2rem 0.1rem 0.35rem;
   }
-  .dept-card textarea:focus, .dept-card input:focus,
+  .dept-card select { cursor: pointer; }
+  .dept-card select option { background: var(--card-bg); color: var(--ink); }
+  .dept-card textarea:focus, .dept-card input:focus, .dept-card select:focus,
   .summary-field textarea:focus { outline: none; border-bottom-color: var(--stamp); }
   .dept-card textarea::placeholder, .dept-card input::placeholder { color: var(--ink-soft); opacity: 0.6; }
+  .dept-card-special { border-left: 3px solid var(--gold); }
   .plain-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -438,8 +441,10 @@ const DEPTS = [
   { key: 'japanese', name: '日语部', tag: '语言' },
   { key: 'cet6', name: '六级词汇部', tag: '语言' },
   { key: 'drawing', name: '绘画部', tag: '创作' },
+  { key: 'calligraphy', name: '书法部', tag: '书写' },
   { key: 'reading', name: '阅读部', tag: '输入' },
-  { key: 'chess', name: '象棋部', tag: '轻资产' }
+  { key: 'chess', name: '象棋部', tag: '轻资产' },
+  { key: 'special', name: '临时专项部', tag: '阶段项目' }
 ];
 
 const grid = document.getElementById('deptGrid');
@@ -447,20 +452,42 @@ let legacyMigrationDoneForUid = null;
 
 DEPTS.forEach(d => {
   const card = document.createElement('div');
-  card.className = 'dept-card';
+  const isSpecial = d.key === 'special';
+  const isCalligraphy = d.key === 'calligraphy';
+  card.className = isSpecial ? 'dept-card dept-card-special' : 'dept-card';
   card.innerHTML = `
     <div class="dept-head">
       <span class="dept-name"></span>
       <span class="dept-tag"></span>
     </div>
     <div class="dept-fields">
-      <div>
-        <label class="field-label">本周产出</label>
-        <textarea rows="2" data-dept="${d.key}" data-field="output" placeholder="完成了什么，数据/进度如何"></textarea>
-      </div>
+      ${isSpecial ? `
+        <div>
+          <label class="field-label">专项名称</label>
+          <input type="text" data-dept="${d.key}" data-field="projectName" placeholder="例如：线代期末复习 / 临时项目">
+        </div>
+        <div>
+          <label class="field-label">项目状态</label>
+          <select data-dept="${d.key}" data-field="status" aria-label="临时专项状态">
+            <option value="">请选择状态</option>
+            <option value="进行中">进行中</option>
+            <option value="已完成">已完成</option>
+            <option value="暂停">暂停</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">本周进展</label>
+          <textarea rows="2" data-dept="${d.key}" data-field="output" placeholder="完成了哪些任务、投入时间、当前进度"></textarea>
+        </div>
+      ` : `
+        <div>
+          <label class="field-label">${isCalligraphy ? '本周练习' : '本周产出'}</label>
+          <textarea rows="2" data-dept="${d.key}" data-field="output" placeholder="${isCalligraphy ? '练习字体、临摹内容、书写技巧或练习时长' : '完成了什么，数据/进度如何'}"></textarea>
+        </div>
+      `}
       <div>
         <label class="field-label">亮点 / 问题</label>
-        <textarea rows="2" data-dept="${d.key}" data-field="notes" placeholder="值得记录的亮点，或遇到的困难"></textarea>
+        <textarea rows="2" data-dept="${d.key}" data-field="notes" placeholder="${isSpecial ? '阶段成果、阻碍、下一步安排' : isCalligraphy ? '字形、结构、控笔方面的进步或问题' : '值得记录的亮点，或遇到的困难'}"></textarea>
       </div>
     </div>
   `;
